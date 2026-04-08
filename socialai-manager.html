@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SocialAI Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f11;
+  --bg2: #16161a;
+  --bg3: #1e1e24;
+  --bg4: #26262e;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #f0f0f4;
+  --text2: #9090a0;
+  --text3: #606070;
+  --accent: #7c6af7;
+  --accent2: #9d8fff;
+  --accent-bg: rgba(124,106,247,0.12);
+  --accent-border: rgba(124,106,247,0.3);
+  --green: #4ade80;
+  --green-bg: rgba(74,222,128,0.1);
+  --amber: #fbbf24;
+  --amber-bg: rgba(251,191,36,0.1);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.1);
+  --blue: #60a5fa;
+  --blue-bg: rgba(96,165,250,0.1);
+  --radius: 10px;
+  --radius-lg: 14px;
+  --sidebar: 230px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;height:100vh;overflow:hidden;display:flex}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;height:100vh}
+.sidebar-logo{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid var(--border)}
+.logo-mark{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.logo-icon{width:28px;height:28px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:16px;height:16px;fill:white}
+.logo-name{font-size:15px;font-weight:600;color:var(--text)}
+.logo-sub{font-size:11px;color:var(--text3);padding-left:38px}
+.nav{padding:1rem 0;flex:1}
+.nav-section-label{font-size:10px;font-weight:600;color:var(--text3);padding:0 1.25rem;margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 1.25rem;cursor:pointer;font-size:13px;color:var(--text2);border-left:2px solid transparent;transition:all .15s;position:relative}
+.nav-item:hover{background:rgba(255,255,255,0.04);color:var(--text)}
+.nav-item.active{background:var(--accent-bg);color:var(--accent2);border-left-color:var(--accent)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.client-bar{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+.client-bar-label{font-size:10px;color:var(--text3);margin-bottom:6px;font-weight:500}
+.client-bar select{width:100%;font-size:12px;background:var(--bg3);color:var(--text);border:1px solid var(--border2);border-radius:var(--radius);padding:7px 10px;cursor:pointer}
+.client-bar select:focus{outline:none;border-color:var(--accent)}
+.api-btn{margin-top:8px;width:100%;padding:7px;font-size:11px;background:transparent;border:1px solid var(--border);color:var(--text3);border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.api-btn:hover{border-color:var(--border2);color:var(--text2)}
+.api-btn svg{width:12px;height:12px}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar h2{font-size:15px;font-weight:500}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.active-client-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:20px;font-size:11px;color:var(--accent2)}
+.active-client-chip::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;flex-shrink:0}
+.content{flex:1;overflow-y:auto;padding:1.5rem}
+
+/* TABS */
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* BUTTONS */
+.btn{padding:8px 16px;font-size:13px;border-radius:var(--radius);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent);color:#fff;border:none}
+.btn-primary:hover{background:#6b59e6;transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.btn-secondary{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-secondary:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-ghost{background:transparent;border:none;color:var(--text3);padding:5px 8px}
+.btn-ghost:hover{color:var(--text2)}
+.btn svg{width:14px;height:14px}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1rem}
+.card:last-child{margin-bottom:0}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.card-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.card-subtitle{font-size:13px;color:var(--text2);margin-top:4px}
+
+/* FORM */
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.form-group{margin-bottom:1rem}
+.form-group:last-child{margin-bottom:0}
+.form-group label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;font-size:13px;font-family:'DM Sans',sans-serif;transition:border-color .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent);background:var(--bg4)}
+.form-group textarea{min-height:80px;resize:vertical;line-height:1.6}
+.form-group select{cursor:pointer}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--text3)}
+
+/* TAGS */
+.tag-row{display:flex;gap:6px;margin-top:6px}
+.tag-row input{flex:1}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tag{display:inline-flex;align-items:center;gap:5px;background:var(--bg4);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--text2)}
+.tag-x{cursor:pointer;color:var(--text3);font-size:14px;line-height:1;transition:color .1s}
+.tag-x:hover{color:var(--red)}
+
+/* STRATEGY CHIPS */
+.chips-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:all .15s}
+.chip:hover{border-color:var(--accent-border);color:var(--text)}
+.chip.on{background:var(--accent-bg);border-color:var(--accent-border);color:var(--accent2)}
+
+/* DATE CHIPS */
+.date-tag{display:inline-flex;align-items:center;gap:5px;background:var(--blue-bg);border:1px solid rgba(96,165,250,0.2);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--blue);margin:3px}
+.date-tag span{cursor:pointer;opacity:.6}
+.date-tag span:hover{opacity:1}
+
+/* AI OUTPUT */
+.ai-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;font-size:13px;color:var(--text2);white-space:pre-wrap;line-height:1.8;min-height:80px;font-family:'DM Mono',monospace}
+
+/* UPLOAD */
+.upload-zone{border:1.5px dashed var(--border2);border-radius:var(--radius-lg);padding:2.5rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--bg)}
+.upload-zone:hover{border-color:var(--accent);background:var(--accent-bg)}
+.upload-zone-icon{width:44px;height:44px;background:var(--bg3);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:1px solid var(--border2)}
+.upload-zone-icon svg{width:22px;height:22px;color:var(--text3)}
+.upload-zone p{font-size:13px;color:var(--text3)}
+.upload-zone p strong{color:var(--text2)}
+.preview-img{max-width:100%;border-radius:var(--radius);max-height:220px;object-fit:cover;display:block}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-success{background:var(--green-bg);color:var(--green)}
+.badge-warn{background:var(--amber-bg);color:var(--amber)}
+.badge-error{background:var(--red-bg);color:var(--red)}
+.badge-info{background:var(--blue-bg);color:var(--blue)}
+.badge-accent{background:var(--accent-bg);color:var(--accent2)}
+
+/* CLIENT CARDS GRID */
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.client-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;cursor:pointer;transition:all .2s;position:relative}
+.client-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.client-card.selected{border-color:var(--accent-border);background:rgba(124,106,247,0.05)}
+.client-avatar{width:42px;height:42px;border-radius:12px;background:var(--accent-bg);border:1px solid var(--accent-border);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent2);flex-shrink:0;font-family:'DM Mono',monospace}
+.client-info{flex:1;min-width:0}
+.client-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.client-actions{display:flex;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+
+/* SPINNER */
+.spin{width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:rot .7s linear infinite;display:inline-block;flex-shrink:0}
+@keyframes rot{to{transform:rotate(360deg)}}
+.loading-row{display:none;align-items:center;gap:8px;font-size:12px;color:var(--text3)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:4rem 2rem;color:var(--text3)}
+.empty-icon{font-size:36px;margin-bottom:12px}
+.empty p{font-size:13px;line-height:1.7}
+
+/* DIVIDER */
+hr{border:none;border-top:1px solid var(--border);margin:1.25rem 0}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.5rem;width:420px;max-width:95vw}
+.modal h3{font-size:15px;font-weight:600;margin-bottom:.5rem}
+.modal p{font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.7}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem}
+.modal input{width:100%;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;font-size:13px;font-family:'DM Mono',monospace}
+.modal input:focus{outline:none;border-color:var(--accent)}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--bg4);border:1px solid var(--border2);color:var(--text);padding:10px 16px;border-radius:var(--radius);font-size:13px;z-index:200;display:flex;align-items:center;gap:8px;animation:toastIn .25s ease;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+@keyframes toastIn{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.toast-success .toast-dot{background:var(--green)}
+.toast-error .toast-dot{background:var(--red)}
+.toast-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--accent)}
+
+/* WARN BOX */
+.warn-box{background:var(--amber-bg);border:1px solid rgba(251,191,36,.2);border-radius:var(--radius);padding:.875rem 1rem;font-size:13px;color:var(--amber);display:flex;align-items:flex-start;gap:8px;margin-bottom:1rem}
+.warn-box svg{width:16px;height:16px;flex-shrink:0;margin-top:2px}
+
+/* SECTION SEPARATOR */
+.section-sep{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">
+        <svg viewBox="0 0 16 16"><path d="M8 1L10 6H15L11 9.5L12.5 14.5L8 11.5L3.5 14.5L5 9.5L1 6H6Z"/></svg>
+      </div>
+      <span class="logo-name">SocialAI</span>
+    </div>
+    <div class="logo-sub">Gestão inteligente de posts</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section-label">Menu</div>
+    <div class="nav-item active" id="nav-clientes" onclick="go('clientes')">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 13c0-3 2.4-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Clientes
+    </div>
+    <div class="nav-item" id="nav-posts" onclick="go('posts')">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 6.5h6M5 9h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Gerador de Posts
+    </div>
+    <div class="nav-item" id="nav-imagem" onclick="go('imagem')">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="5.5" cy="5.5" r="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 11l4-3 3 3 2-2 3 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Verificar Imagem
+    </div>
+    <div class="nav-item" id="nav-legenda" onclick="go('legenda')">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 7h10M3 10h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Legenda + Hashtags
+    </div>
+  </nav>
+  <div class="client-bar">
+    <div class="client-bar-label">Cliente ativo</div>
+    <select id="globalClient" onchange="setGlobalClient()">
+      <option value="">Selecione um cliente...</option>
+    </select>
+    <button class="api-btn" onclick="openApiModal()">
+      <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 4v2M6 8h.01" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Configurar chave de API
+    </button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2 id="page-title">Clientes</h2>
+    </div>
+    <div class="topbar-right">
+      <span id="active-badge" style="display:none" class="active-client-chip"></span>
+      <button class="btn btn-primary btn-sm" id="topbar-btn" onclick="topbarAction()">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Novo Cliente
+      </button>
+    </div>
+  </div>
+  <div class="content" id="content-area">
+
+    <!-- ===== CLIENTES ===== -->
+    <div class="tab-panel active" id="tab-clientes">
+      <div id="view-list">
+        <div id="clients-grid" class="clients-grid"></div>
+        <div id="no-clients" class="empty" style="display:none">
+          <div class="empty-icon">👥</div>
+          <p>Nenhum cliente cadastrado ainda.<br>Clique em <strong>Novo Cliente</strong> para começar.</p>
+        </div>
+      </div>
+      <div id="view-form" style="display:none">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title" id="form-card-title">Novo Cliente</div>
+              <div class="card-subtitle">Preencha as informações do cliente para personalizar os posts</div>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group"><label>Nome / Empresa</label><input id="f-nome" placeholder="Ex: Boutique Sofia"></div>
+            <div class="form-group"><label>Ramo de atividade</label><input id="f-ramo" placeholder="Ex: Moda feminina"></div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group"><label>Nicho</label><input id="f-nicho" placeholder="Ex: Moda plus size"></div>
+            <div class="form-group"><label>Público-alvo</label><input id="f-publico" placeholder="Ex: Mulheres 25–40 anos"></div>
+          </div>
+          <div class="form-group">
+            <label>Palavras-chave SEO</label>
+            <div class="tag-row"><input id="f-seo-in" placeholder="Digite e pressione Enter ou clique em Adicionar" onkeydown="tagKey(event,'seo')"><button class="btn btn-secondary btn-sm" onclick="addTag('seo')">+ Adicionar</button></div>
+            <div class="tags-wrap" id="seo-wrap"></div>
+          </div>
+          <div class="form-group">
+            <label>Tom de voz / personalidade da marca</label>
+            <div class="tag-row"><input id="f-tom-in" placeholder="Ex: descontraído, sofisticado, jovem..." onkeydown="tagKey(event,'tom')"><button class="btn btn-secondary btn-sm" onclick="addTag('tom')">+ Adicionar</button></div>
+            <div class="tags-wrap" id="tom-wrap"></div>
+          </div>
+          <div class="form-group">
+            <label>Redes sociais ativas</label>
+            <div class="tag-row"><input id="f-redes-in" placeholder="Ex: Instagram, TikTok, LinkedIn..." onkeydown="tagKey(event,'redes')"><button class="btn btn-secondary btn-sm" onclick="addTag('redes')">+ Adicionar</button></div>
+            <div class="tags-wrap" id="redes-wrap"></div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Objetivo de marketing</label>
+              <select id="f-objetivo">
+                <option value="">Selecione...</option>
+                <option>Aumentar seguidores</option>
+                <option>Gerar vendas diretas</option>
+                <option>Fortalecer marca</option>
+                <option>Engajamento e comunidade</option>
+                <option>Lançamento de produto</option>
+                <option>Retenção de clientes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Site / URL principal</label>
+              <input id="f-site" placeholder="https://...">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Observações e instruções especiais</label>
+            <textarea id="f-obs" placeholder="Restrições, informações importantes, estilo visual, concorrentes, etc."></textarea>
+          </div>
+          <div style="display:flex;gap:8px;padding-top:.5rem">
+            <button class="btn btn-primary" onclick="saveClient()">Salvar cliente</button>
+            <button class="btn btn-secondary" onclick="cancelForm()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== POSTS ===== -->
+    <div class="tab-panel" id="tab-posts">
+      <div id="posts-no-client" class="warn-box" style="display:none">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3M8 10h.01" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Selecione um cliente no menu lateral para gerar posts personalizados.
+      </div>
+      <div id="posts-body">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Estratégia de marketing</div></div>
+          <div class="chips-wrap" id="strategy-chips">
+            <span class="chip on" onclick="toggleChip(this,'Educativo')">Educativo</span>
+            <span class="chip" onclick="toggleChip(this,'Promocional')">Promocional</span>
+            <span class="chip" onclick="toggleChip(this,'Storytelling')">Storytelling</span>
+            <span class="chip" onclick="toggleChip(this,'Bastidores')">Bastidores</span>
+            <span class="chip" onclick="toggleChip(this,'Prova social')">Prova social</span>
+            <span class="chip" onclick="toggleChip(this,'Engajamento')">Engajamento</span>
+            <span class="chip" onclick="toggleChip(this,'Lançamento')">Lançamento</span>
+            <span class="chip" onclick="toggleChip(this,'Datas comemorativas')">Datas comemorativas</span>
+          </div>
+        </div>
+        <div class="card" id="datas-card" style="display:none">
+          <div class="card-header"><div class="card-title">Datas comemorativas / campanhas</div></div>
+          <div class="form-grid-3">
+            <div class="form-group"><label>Data</label><input type="date" id="p-data"></div>
+            <div class="form-group"><label>Nome da data</label><input id="p-data-nome" placeholder="Ex: Dia das Mães"></div>
+            <div class="form-group" style="display:flex;align-items:flex-end"><button class="btn btn-secondary btn-sm" style="width:100%" onclick="addDateChip()">Adicionar data</button></div>
+          </div>
+          <div id="date-chips-wrap"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Detalhes do post</div></div>
+          <div class="form-grid-2">
+            <div class="form-group"><label>Rede social</label>
+              <select id="p-rede"><option>Instagram</option><option>Facebook</option><option>LinkedIn</option><option>TikTok</option><option>Twitter / X</option><option>Pinterest</option></select>
+            </div>
+            <div class="form-group"><label>Formato</label>
+              <select id="p-formato"><option>Feed — carrossel</option><option>Feed — imagem única</option><option>Stories</option><option>Reels</option><option>Post texto</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label>Tema / assunto do post</label><input id="p-tema" placeholder="Ex: Dicas de cuidados com a pele no inverno"></div>
+          <div class="form-group"><label>Informações extras (opcional)</label><textarea id="p-extra" placeholder="Produto específico, promoção, detalhes importantes..."></textarea></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <button class="btn btn-primary" onclick="generatePost()">
+              <svg viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 4H13L9.5 7.5 11 12 7 9.5 3 12l1.5-4.5L1 5h4.5Z" stroke="currentColor" stroke-width="1.3"/></svg>
+              Gerar post com IA
+            </button>
+            <div class="loading-row" id="post-load"><div class="spin"></div>Gerando post...</div>
+          </div>
+        </div>
+        <div class="card" id="post-result" style="display:none">
+          <div class="card-header">
+            <div class="card-title">Post gerado</div>
+            <button class="btn btn-secondary btn-sm" onclick="copy('post-out','Post copiado!')">Copiar</button>
+          </div>
+          <div class="ai-box" id="post-out"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== IMAGEM ===== -->
+    <div class="tab-panel" id="tab-imagem">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Upload da imagem</div></div>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('img-file').click()">
+          <input type="file" id="img-file" accept="image/*" style="display:none" onchange="loadImage(event)">
+          <div class="upload-zone-icon">
+            <svg viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="7.5" cy="10.5" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 16l5-4 4 4 3-3 6 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 2v5M9 4l2-2 2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p><strong>Clique para selecionar</strong> ou arraste uma imagem</p>
+          <p style="font-size:11px;margin-top:4px">PNG, JPG, WEBP — máx. 5MB</p>
+        </div>
+        <div id="img-preview-area" style="display:none;margin-top:1rem">
+          <img id="img-preview" class="preview-img" alt="Preview da imagem">
+          <div style="display:flex;align-items:center;gap:8px;margin-top:.875rem">
+            <button class="btn btn-primary" onclick="verifyImage()">
+              <svg viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Verificar texto na imagem
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="clearImg()">Remover imagem</button>
+            <div class="loading-row" id="img-load"><div class="spin"></div>Analisando imagem...</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="verify-result" style="display:none">
+        <div class="card-header">
+          <div class="card-title">Resultado da verificação</div>
+          <span id="verify-badge"></span>
+        </div>
+        <div class="ai-box" id="verify-out"></div>
+        <div style="margin-top:1rem">
+          <button class="btn btn-primary btn-sm" onclick="go('legenda')">Continuar → Gerar legenda + hashtags</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== LEGENDA ===== -->
+    <div class="tab-panel" id="tab-legenda">
+      <div id="leg-no-img" class="warn-box" style="display:none">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3M8 10h.01" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Primeiro faça o upload de uma imagem na aba <strong style="margin-left:3px">Verificar Imagem</strong>.
+      </div>
+      <div id="leg-body">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Configurações da legenda</div></div>
+          <div class="form-grid-2">
+            <div class="form-group"><label>Rede social</label>
+              <select id="l-rede"><option>Instagram</option><option>Facebook</option><option>LinkedIn</option><option>TikTok</option><option>Pinterest</option></select>
+            </div>
+            <div class="form-group"><label>Idioma</label>
+              <select id="l-idioma"><option>Português (BR)</option><option>Inglês</option><option>Ambos — PT + EN</option></select>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group"><label>Tom da legenda</label>
+              <select id="l-tom"><option>Vendedor — CTA direto</option><option>Informativo / educativo</option><option>Emocional / storytelling</option><option>Descontraído / humorístico</option><option>Inspirador</option><option>Urgência / escassez</option></select>
+            </div>
+            <div class="form-group"><label>Quantidade de hashtags</label>
+              <select id="l-qtd"><option>5 a 10 (focadas)</option><option>15 a 20 (médio)</option><option>25 a 30 (máximo alcance)</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label>Informação extra para a legenda (opcional)</label><textarea id="l-extra" placeholder="Promoção ativa, link na bio, lançamento, etc." style="min-height:60px"></textarea></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <button class="btn btn-primary" onclick="generateCaption()">
+              <svg viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 4H13L9.5 7.5 11 12 7 9.5 3 12l1.5-4.5L1 5h4.5Z" stroke="currentColor" stroke-width="1.3"/></svg>
+              Gerar legenda + hashtags
+            </button>
+            <div class="loading-row" id="leg-load"><div class="spin"></div>Gerando legenda...</div>
+          </div>
+        </div>
+        <div class="card" id="caption-result" style="display:none">
+          <div class="card-header">
+            <div class="card-title">Legenda gerada</div>
+            <button class="btn btn-secondary btn-sm" onclick="copy('caption-out','Legenda copiada!')">Copiar tudo</button>
+          </div>
+          <div class="ai-box" id="caption-out"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- API MODAL -->
+<div class="modal-overlay" id="api-modal">
+  <div class="modal">
+    <h3>Configurar chave de API</h3>
+    <p>Para usar o SocialAI Manager você precisa de uma chave da API da Anthropic. A chave fica salva <strong>apenas no seu navegador</strong> (localStorage) e nunca é enviada para terceiros.<br><br>Obtenha sua chave em <strong>console.anthropic.com</strong></p>
+    <input type="password" id="api-key-input" placeholder="sk-ant-...">
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-sm" onclick="closeApiModal()">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="saveApiKey()">Salvar chave</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────
+let clients = JSON.parse(localStorage.getItem('sam_clients') || '[]');
+let activeId = localStorage.getItem('sam_active') || null;
+let editId = null;
+let tags = {seo:[],tom:[],redes:[]};
+let strategies = new Set(['Educativo']);
+let dateChips = [];
+let imgB64 = null;
+let imgType = null;
+let imgVerifyText = '';
+let generatedPostText = '';
+
+function apiKey(){return localStorage.getItem('sam_apikey')||'';}
+function saveClients(){localStorage.setItem('sam_clients',JSON.stringify(clients));}
+
+// ── NAVIGATION ─────────────────────────────────────────
+const tabTitles = {clientes:'Clientes',posts:'Gerador de Posts',imagem:'Verificar Imagem',legenda:'Legenda + Hashtags'};
+function go(tab){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('nav-'+tab).classList.add('active');
+  document.getElementById('page-title').textContent = tabTitles[tab];
+  const btn = document.getElementById('topbar-btn');
+  btn.style.display = tab==='clientes'?'':'none';
+  if(tab==='posts') checkPostsState();
+  if(tab==='legenda') checkLegendaState();
+}
+function topbarAction(){showForm();}
+
+// ── TOAST ──────────────────────────────────────────────
+function toast(msg,type=''){
+  const t=document.createElement('div');
+  t.className='toast toast-'+type;
+  t.innerHTML=`<div class="toast-dot"></div>${msg}`;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2800);
+}
+
+// ── COPY ───────────────────────────────────────────────
+function copy(id,msg){
+  const t=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(t).then(()=>toast(msg,'success'));
+}
+
+// ── API MODAL ──────────────────────────────────────────
+function openApiModal(){
+  document.getElementById('api-key-input').value=apiKey();
+  document.getElementById('api-modal').classList.add('open');
+}
+function closeApiModal(){document.getElementById('api-modal').classList.remove('open');}
+function saveApiKey(){
+  const k=document.getElementById('api-key-input').value.trim();
+  if(!k){toast('Cole sua chave de API','error');return;}
+  localStorage.setItem('sam_apikey',k);
+  closeApiModal();
+  toast('Chave salva com sucesso!','success');
+}
+
+// ── CLIENT DROPDOWN ────────────────────────────────────
+function refreshDropdown(){
+  const sel=document.getElementById('globalClient');
+  sel.innerHTML='<option value="">Selecione um cliente...</option>'+
+    clients.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+  sel.value=activeId||'';
+}
+function setGlobalClient(){
+  activeId=document.getElementById('globalClient').value||null;
+  localStorage.setItem('sam_active',activeId||'');
+  renderBadge();
+  renderClients();
+}
+function renderBadge(){
+  const b=document.getElementById('active-badge');
+  if(activeId){
+    const c=clients.find(x=>x.id===activeId);
+    if(c){b.textContent=c.nome;b.style.display='inline-flex';return;}
+  }
+  b.style.display='none';
+}
+
+// ── CLIENT LIST ────────────────────────────────────────
+function renderClients(){
+  const grid=document.getElementById('clients-grid');
+  const none=document.getElementById('no-clients');
+  if(!clients.length){grid.innerHTML='';none.style.display='block';return;}
+  none.style.display='none';
+  grid.innerHTML=clients.map(c=>`
+    <div class="client-card ${activeId===c.id?'selected':''}" onclick="selectClient('${c.id}')">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <div class="client-avatar">${c.nome.substring(0,2).toUpperCase()}</div>
+        <div class="client-info">
+          <div class="client-name">${c.nome}</div>
+          <div class="client-meta">${c.ramo||'Sem ramo'} ${c.nicho?'· '+c.nicho:''}</div>
+        </div>
+      </div>
+      ${c.publico?`<div style="font-size:11px;color:var(--text3);margin-bottom:8px">👥 ${c.publico}</div>`:''}
+      <div class="tags-wrap" style="margin-bottom:10px">
+        ${(c.seo||[]).slice(0,4).map(t=>`<span class="tag">${t}</span>`).join('')}
+        ${(c.seo||[]).length>4?`<span class="tag">+${c.seo.length-4}</span>`:''}
+      </div>
+      ${c.objetivo?`<span class="badge badge-accent" style="font-size:10px">${c.objetivo}</span>`:''}
+      <div class="client-actions">
+        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();showForm('${c.id}')">Editar</button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();delClient('${c.id}')">Excluir</button>
+        ${activeId!==c.id?`<button class="btn btn-secondary btn-sm" style="margin-left:auto" onclick="event.stopPropagation();selectClient('${c.id}')">Selecionar</button>`:'<span class="badge badge-accent" style="margin-left:auto;font-size:10px">Ativo</span>'}
+      </div>
+    </div>`).join('');
+}
+function selectClient(id){
+  activeId=id;
+  localStorage.setItem('sam_active',id);
+  document.getElementById('globalClient').value=id;
+  renderBadge();renderClients();
+  toast('Cliente selecionado!');
+}
+function delClient(id){
+  if(!confirm('Excluir este cliente?')) return;
+  clients=clients.filter(x=>x.id!==id);
+  if(activeId===id){activeId=null;localStorage.removeItem('sam_active');renderBadge();}
+  saveClients();refreshDropdown();renderClients();
+  toast('Cliente excluído');
+}
+
+// ── CLIENT FORM ────────────────────────────────────────
+function showForm(id=null){
+  editId=id; tags={seo:[],tom:[],redes:[]};
+  document.getElementById('view-list').style.display='none';
+  document.getElementById('view-form').style.display='block';
+  document.getElementById('form-card-title').textContent=id?'Editar cliente':'Novo cliente';
+  if(id){
+    const c=clients.find(x=>x.id===id);
+    ['nome','ramo','nicho','publico','site','obs'].forEach(f=>{
+      const el=document.getElementById('f-'+f); if(el) el.value=c[f]||'';
+    });
+    document.getElementById('f-objetivo').value=c.objetivo||'';
+    tags.seo=[...c.seo||[]]; tags.tom=[...c.tom||[]]; tags.redes=[...c.redes||[]];
+  } else {
+    ['f-nome','f-ramo','f-nicho','f-publico','f-site','f-obs','f-seo-in','f-tom-in','f-redes-in'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('f-objetivo').value='';
+  }
+  renderAllTags();
+}
+function cancelForm(){
+  document.getElementById('view-list').style.display='block';
+  document.getElementById('view-form').style.display='none';
+}
+function saveClient(){
+  const nome=document.getElementById('f-nome').value.trim();
+  if(!nome){toast('Informe o nome do cliente','error');return;}
+  const c={
+    id:editId||Date.now().toString(),
+    nome, ramo:document.getElementById('f-ramo').value.trim(),
+    nicho:document.getElementById('f-nicho').value.trim(),
+    publico:document.getElementById('f-publico').value.trim(),
+    site:document.getElementById('f-site').value.trim(),
+    objetivo:document.getElementById('f-objetivo').value,
+    obs:document.getElementById('f-obs').value.trim(),
+    seo:[...tags.seo], tom:[...tags.tom], redes:[...tags.redes]
+  };
+  if(editId){const i=clients.findIndex(x=>x.id===editId);clients[i]=c;}
+  else clients.push(c);
+  saveClients();cancelForm();refreshDropdown();renderClients();
+  toast(editId?'Cliente atualizado!':'Cliente cadastrado!','success');
+}
+
+// ── TAGS ───────────────────────────────────────────────
+function tagKey(e,t){if(e.key==='Enter'){e.preventDefault();addTag(t);}}
+function addTag(type){
+  const inp=document.getElementById('f-'+type+'-in');
+  const v=inp.value.trim(); if(!v) return;
+  tags[type].push(v); inp.value=''; renderTag(type);
+}
+function removeTag(type,i){tags[type].splice(i,1);renderTag(type);}
+function renderTag(type){
+  document.getElementById(type+'-wrap').innerHTML=tags[type].map((t,i)=>
+    `<span class="tag">${t}<span class="tag-x" onclick="removeTag('${type}',${i})">×</span></span>`).join('');
+}
+function renderAllTags(){renderTag('seo');renderTag('tom');renderTag('redes');}
+
+// ── STRATEGY CHIPS ─────────────────────────────────────
+function toggleChip(el,name){
+  if(strategies.has(name)){if(strategies.size>1)strategies.delete(name);else return;}
+  else strategies.add(name);
+  document.querySelectorAll('#strategy-chips .chip').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('#strategy-chips .chip').forEach(c=>{if(strategies.has(c.textContent.trim()))c.classList.add('on');});
+  document.getElementById('datas-card').style.display=strategies.has('Datas comemorativas')?'block':'none';
+}
+
+// ── DATE CHIPS ─────────────────────────────────────────
+function addDateChip(){
+  const n=document.getElementById('p-data-nome').value.trim();
+  if(!n){toast('Informe o nome da data','error');return;}
+  const d=document.getElementById('p-data').value;
+  dateChips.push({nome:n,data:d});
+  renderDateChips();
+  document.getElementById('p-data').value='';
+  document.getElementById('p-data-nome').value='';
+}
+function renderDateChips(){
+  document.getElementById('date-chips-wrap').innerHTML=dateChips.map((c,i)=>
+    `<span class="date-tag">${c.nome}${c.data?' ('+c.data+')':''}<span onclick="dateChips.splice(${i},1);renderDateChips()">×</span></span>`).join('');
+}
+
+// ── POSTS CHECK ────────────────────────────────────────
+function checkPostsState(){
+  const warn=document.getElementById('posts-no-client');
+  const body=document.getElementById('posts-body');
+  if(!activeId){warn.style.display='flex';body.style.display='none';}
+  else{warn.style.display='none';body.style.display='block';}
+}
+function checkLegendaState(){
+  const warn=document.getElementById('leg-no-img');
+  const body=document.getElementById('leg-body');
+  if(!imgB64){warn.style.display='flex';body.style.display='none';}
+  else{warn.style.display='none';body.style.display='block';}
+}
+
+// ── API CALL ───────────────────────────────────────────
+async function callAI(messages,onDone){
+  const k=apiKey();
+  if(!k){openApiModal();toast('Configure sua chave de API primeiro','error');return;}
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages})
+    });
+    if(!r.ok){const e=await r.json();toast('Erro da API: '+(e.error?.message||r.status),'error');return;}
+    const d=await r.json();
+    const text=d.content.map(i=>i.text||'').join('');
+    onDone(text);
+  }catch(e){toast('Erro de conexão. Verifique sua chave e tente novamente.','error');}
+}
+
+// ── GENERATE POST ──────────────────────────────────────
+async function generatePost(){
+  if(!activeId){toast('Selecione um cliente','error');return;}
+  const tema=document.getElementById('p-tema').value.trim();
+  if(!tema){toast('Informe o tema do post','error');return;}
+  const c=clients.find(x=>x.id===activeId);
+  const extra=document.getElementById('p-extra').value.trim();
+  const rede=document.getElementById('p-rede').value;
+  const formato=document.getElementById('p-formato').value;
+  const strats=[...strategies].join(', ');
+  const datas=dateChips.length?'\nDatas comemorativas: '+dateChips.map(d=>d.nome+(d.data?' ('+d.data+')':'')).join(', '):'';
+  const prompt=`Você é um especialista em marketing digital e copywriting para redes sociais no Brasil.
+
+Gere um post completo para o seguinte cliente:
+━ Empresa: ${c.nome}
+━ Ramo: ${c.ramo||'não informado'}
+━ Nicho: ${c.nicho||'não informado'}
+━ Público-alvo: ${c.publico||'não informado'}
+━ Keywords SEO: ${(c.seo||[]).join(', ')||'não informadas'}
+━ Tom de voz da marca: ${(c.tom||[]).join(', ')||'não informado'}
+━ Objetivo de marketing: ${c.objetivo||'não informado'}
+━ Redes ativas: ${(c.redes||[]).join(', ')||'não informadas'}
+${c.obs?'━ Observações: '+c.obs:''}
+
+Configurações do post:
+━ Rede social: ${rede}
+━ Formato: ${formato}
+━ Estratégia(s): ${strats}${datas}
+━ Tema: ${tema}
+${extra?'━ Informações extras: '+extra:''}
+
+Estruture a resposta assim:
+📌 HEADLINE:
+[abertura impactante]
+
+📝 CORPO DO POST:
+[conteúdo adaptado ao formato ${formato} para ${rede}]
+
+🎯 CTA:
+[chamada para ação clara e direta]
+
+#️⃣ HASHTAGS SUGERIDAS:
+[8 hashtags relevantes]
+
+Responda diretamente sem introduções ou explicações.`;
+
+  document.getElementById('post-load').style.display='inline-flex';
+  document.getElementById('post-result').style.display='none';
+  await callAI([{role:'user',content:prompt}],(text)=>{
+    generatedPostText=text;
+    document.getElementById('post-out').textContent=text;
+    document.getElementById('post-result').style.display='block';
+    toast('Post gerado!','success');
+  });
+  document.getElementById('post-load').style.display='none';
+}
+
+// ── IMAGE ──────────────────────────────────────────────
+function loadImage(e){
+  const f=e.target.files[0]; if(!f) return;
+  if(f.size>5*1024*1024){toast('Imagem muito grande (máx 5MB)','error');return;}
+  imgType=f.type;
+  const r=new FileReader();
+  r.onload=ev=>{
+    imgB64=ev.target.result.split(',')[1];
+    document.getElementById('img-preview').src=ev.target.result;
+    document.getElementById('img-preview-area').style.display='block';
+    document.getElementById('verify-result').style.display='none';
+    imgVerifyText='';
+  };
+  r.readAsDataURL(f);
+}
+function clearImg(){
+  imgB64=null;imgType=null;imgVerifyText='';
+  document.getElementById('img-preview-area').style.display='none';
+  document.getElementById('verify-result').style.display='none';
+  document.getElementById('img-file').value='';
+}
+async function verifyImage(){
+  if(!imgB64){toast('Faça upload de uma imagem','error');return;}
+  const prompt=`Analise esta imagem com atenção completa e forneça:
+
+1. TRANSCRIÇÃO DOS TEXTOS:
+Transcreva todo texto visível na imagem.
+
+2. VERIFICAÇÃO ORTOGRÁFICA:
+• Erros em PORTUGUÊS: lista cada erro encontrado → correção sugerida
+• Erros em INGLÊS: lista cada erro encontrado → correção sugerida
+• Se não houver erros, diga "Nenhum erro encontrado"
+
+3. QUALIDADE VISUAL:
+Avalie nitidez, legibilidade e adequação para redes sociais.
+
+4. DESCRIÇÃO DO CONTEÚDO:
+Descreva brevemente o que aparece na imagem (será usado para gerar a legenda).
+
+5. RESULTADO FINAL:
+✅ APROVADO — se estiver tudo correto
+⚠️ REVISAR — se houver erros ou problemas
+
+Seja direto e objetivo.`;
+
+  document.getElementById('img-load').style.display='inline-flex';
+  document.getElementById('verify-result').style.display='none';
+  await callAI([{role:'user',content:[
+    {type:'image',source:{type:'base64',media_type:imgType,data:imgB64}},
+    {type:'text',text:prompt}
+  ]}],(text)=>{
+    imgVerifyText=text;
+    document.getElementById('verify-out').textContent=text;
+    const hasErr=text.includes('⚠️')||/erro|error|incorreto|corrig/i.test(text)&&!/nenhum erro/i.test(text);
+    const badge=document.getElementById('verify-badge');
+    badge.className='badge '+(hasErr?'badge-warn':'badge-success');
+    badge.textContent=hasErr?'Revisar erros':'Aprovado';
+    document.getElementById('verify-result').style.display='block';
+    toast(hasErr?'Foram encontrados problemas na imagem':'Imagem aprovada!',hasErr?'':'success');
+  });
+  document.getElementById('img-load').style.display='none';
+}
+
+// ── CAPTION ────────────────────────────────────────────
+async function generateCaption(){
+  if(!imgB64){toast('Faça upload de uma imagem primeiro','error');return;}
+  const c=activeId?clients.find(x=>x.id===activeId):null;
+  const rede=document.getElementById('l-rede').value;
+  const idioma=document.getElementById('l-idioma').value;
+  const tom=document.getElementById('l-tom').value;
+  const qtd=document.getElementById('l-qtd').value;
+  const extra=document.getElementById('l-extra').value.trim();
+
+  const clientInfo=c?`
+━ Empresa: ${c.nome}
+━ Ramo: ${c.ramo||'não informado'}
+━ Nicho: ${c.nicho||'não informado'}
+━ Público-alvo: ${c.publico||'não informado'}
+━ Keywords SEO: ${(c.seo||[]).join(', ')||'não informadas'}
+━ Tom de voz: ${(c.tom||[]).join(', ')||'não informado'}
+━ Objetivo: ${c.objetivo||'não informado'}`:'(cliente não selecionado — use contexto geral da imagem)';
+
+  const prompt=`Analise esta imagem e crie uma legenda completa para redes sociais.
+
+DADOS DO CLIENTE:${clientInfo}
+
+CONFIGURAÇÕES:
+━ Rede social: ${rede}
+━ Idioma: ${idioma}
+━ Tom: ${tom}
+━ Hashtags: ${qtd}
+${extra?'━ Info extra: '+extra:''}
+${imgVerifyText?'━ Contexto da imagem (verificação anterior):\n'+imgVerifyText.substring(0,500):''}
+
+INSTRUÇÕES:
+• Crie legenda otimizada para ${rede} com tom ${tom}
+• Inclua emojis de forma natural e estratégica
+• Finalize com CTA forte e adequado para ${rede}
+• Gere ${qtd} hashtags estratégicas segmentadas por: nicho, alcance médio, trending e marca
+${idioma==='Ambos — PT + EN'?'• Crie PRIMEIRO a versão em Português, depois a versão em Inglês abaixo':''}
+
+FORMATO DA RESPOSTA:
+
+📲 LEGENDA (${rede} — ${idioma}):
+[legenda aqui]
+
+#️⃣ HASHTAGS:
+[hashtags aqui]
+${idioma==='Ambos — PT + EN'?'\n📲 CAPTION (English):\n[english caption here]\n\n#️⃣ HASHTAGS (EN):\n[english hashtags here]':''}`;
+
+  document.getElementById('leg-load').style.display='inline-flex';
+  document.getElementById('caption-result').style.display='none';
+  await callAI([{role:'user',content:[
+    {type:'image',source:{type:'base64',media_type:imgType,data:imgB64}},
+    {type:'text',text:prompt}
+  ]}],(text)=>{
+    document.getElementById('caption-out').textContent=text;
+    document.getElementById('caption-result').style.display='block';
+    toast('Legenda gerada!','success');
+  });
+  document.getElementById('leg-load').style.display='none';
+}
+
+// ── INIT ───────────────────────────────────────────────
+refreshDropdown();
+renderBadge();
+renderClients();
+if(!apiKey()) setTimeout(()=>toast('Configure sua chave de API para começar a usar',''),1000);
+</script>
+</body>
+</html>
